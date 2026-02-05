@@ -6,6 +6,17 @@ import { HttpClient, HttpClientError } from '../client/http-client'
 import { OpenAPIV3 } from 'openapi-types'
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { ResponseTransformer, createTransformerFromEnv, TransformConfig } from './transformer'
+import {
+  MCPNotionError,
+  AuthenticationError,
+  ValidationError,
+  PermissionError,
+  NotFoundError,
+  ConflictError,
+  RateLimitError,
+  ServerError
+} from './errors'
+import { formatUserMessage } from './error-formatter'
 
 type PathItemObject = OpenAPIV3.PathItemObject & {
   get?: OpenAPIV3.OperationObject
@@ -59,6 +70,104 @@ function deserializeParams(params: Record<string, unknown>): Record<string, unkn
   }
 
   return result
+}
+
+/**
+ * Map HttpClientError to appropriate MCP error class based on HTTP status and error code
+ */
+export function mapNotionErrorToMCPError(
+  error: HttpClientError,
+  operation?: string,
+  params?: Record<string, unknown>
+): MCPNotionError {
+  const { status, data, message: originalMessage } = error
+
+  // Extract error message from Notion API response
+  // The HttpClientError message is in format "STATUS StatusText" (e.g., "404 Not Found")
+  // We want to extract the actual message from the data if available
+  let message = originalMessage.replace(/^\d+\s*/, '') // Remove leading status code
+  let errorCode: string | undefined
+  let field: string | undefined
+  let resourceType: string | undefined
+  let retryAfter: number | undefined
+
+  if (typeof data === 'object' && data !== null) {
+    const errorData = data as any
+    // Notion API error response structure
+    if (errorData.message) {
+      message = errorData.message
+    }
+    if (errorData.code) {
+      errorCode = errorData.code
+    }
+    if (errorData.field) {
+      field = errorData.field
+    }
+    // Extract Retry-After header from error data if present
+    if (errorData.retry_after !== undefined) {
+      retryAfter = typeof errorData.retry_after === 'number' ? errorData.retry_after : parseInt(errorData.retry_after, 10)
+    }
+  }
+
+  // Map based on HTTP status code
+  switch (status) {
+    case 400:
+      return new ValidationError(message, field, operation, params)
+
+    case 401:
+      return new AuthenticationError(message, operation, params, 401)
+
+    case 403: // Notion uses 403 for some auth issues too
+      if (errorCode === 'permission_required') {
+        return new PermissionError(message, operation, params)
+      }
+      // 403 without permission_required is treated as authentication error
+      return new AuthenticationError(message, operation, params, 403)
+
+    case 404:
+      // Try to infer resource type from operation
+      if (operation) {
+        // Check for block first (before page, since page includes 'block' in some compound names)
+        if (operation.includes('block')) {
+          resourceType = 'block'
+        } else if (operation.includes('page')) {
+          resourceType = 'page'
+        } else if (operation.includes('data_source') || operation.includes('data-source')) {
+          resourceType = 'database'
+        } else if (operation.includes('database')) {
+          resourceType = 'database'
+        } else if (operation.includes('user')) {
+          resourceType = 'user'
+        }
+      }
+      return new NotFoundError(message, resourceType, operation, params)
+
+    case 409:
+      return new ConflictError(message, operation, params)
+
+    case 429:
+      // Check for Retry-After in headers
+      if (error.headers) {
+        const retryAfterHeader = error.headers.get('Retry-After')
+        if (retryAfterHeader) {
+          const parsed = parseInt(retryAfterHeader, 10)
+          if (!isNaN(parsed)) {
+            retryAfter = parsed
+          }
+        }
+      }
+      return new RateLimitError(message, retryAfter, operation, params)
+
+    case 500:
+    case 502:
+    case 503:
+    case 504:
+      return new ServerError(message, operation, params)
+
+    default:
+      // Fallback to generic server error for unknown statuses
+      return new ServerError(message, operation, params)
+  }
 }
 
 // import this class, extend and return server
@@ -173,17 +282,27 @@ export class MCPProxy {
         console.error('Error in tool call', error)
         if (error instanceof HttpClientError) {
           console.error('HttpClientError encountered, returning structured error', error)
-          const data = error.data?.response?.data ?? error.data ?? {}
+          // Map to appropriate MCP error
+          const mcpError = mapNotionErrorToMCPError(
+            error,
+            operation.operationId ?? undefined,
+            Object.keys(apiParams).length > 0 ? apiParams : undefined
+          )
+
+          // Format user-friendly message
+          const userMessage = formatUserMessage(mcpError)
+
           return {
             content: [
               {
                 type: 'text',
                 text: JSON.stringify({
-                  status: 'error', // TODO: get this from http status code?
-                  ...(typeof data === 'object' ? data : { data: data }),
-                }),
-              },
+                  message: userMessage,
+                  error: mcpError.toJSON()
+                })
+              }
             ],
+            isError: true
           }
         }
         throw error
