@@ -455,6 +455,19 @@ export class OpenAPIToMCPConverter {
     // Extract return type (response schema)
     const returnSchema = this.extractResponseType(operation.responses)
 
+    // Add transformation parameters to inputSchema
+    // These are optional parameters that control response formatting
+    inputSchema.properties!['_output'] = {
+      type: 'string',
+      enum: ['full', 'reduced', 'success_only'],
+      description: 'Response format mode: full (unchanged), reduced (extracts values from nested structures), success_only (minimal confirmation for writes)',
+    }
+    inputSchema.properties!['_fields'] = {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Optional list of fields to include when using _output=reduced. If not specified, all fields are included.',
+    }
+
     // Generate Zod schema from input schema
     try {
       // const zodSchemaStr = jsonSchemaToZod(inputSchema, { module: "cjs" })

@@ -5,6 +5,7 @@ import { OpenAPIToMCPConverter } from '../openapi/parser'
 import { HttpClient, HttpClientError } from '../client/http-client'
 import { OpenAPIV3 } from 'openapi-types'
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
+import { ResponseTransformer, createTransformerFromEnv, TransformConfig } from './transformer'
 
 type PathItemObject = OpenAPIV3.PathItemObject & {
   get?: OpenAPIV3.OperationObject
@@ -66,6 +67,7 @@ export class MCPProxy {
   private httpClient: HttpClient
   private tools: Record<string, NewToolDefinition>
   private openApiLookup: Record<string, OpenAPIV3.OperationObject & { method: string; path: string }>
+  private transformer: ResponseTransformer
 
   constructor(name: string, openApiSpec: OpenAPIV3.Document) {
     this.server = new Server({ name, version: '1.0.0' }, { capabilities: { tools: {} } })
@@ -80,6 +82,9 @@ export class MCPProxy {
       },
       openApiSpec,
     )
+
+    // Initialize response transformer with environment-based configuration
+    this.transformer = createTransformerFromEnv()
 
     // Convert OpenAPI spec to MCP tools
     const converter = new OpenAPIToMCPConverter(openApiSpec)
@@ -137,16 +142,30 @@ export class MCPProxy {
       // See: https://github.com/makenotion/notion-mcp-server/issues/176
       const deserializedParams = params ? deserializeParams(params as Record<string, unknown>) : {}
 
+      // Extract transformation parameters (remove them from params passed to API)
+      const { _output, _fields, ...apiParams } = deserializedParams as Record<string, unknown>
+
       try {
         // Execute the operation
-        const response = await this.httpClient.executeOperation(operation, deserializedParams)
+        const response = await this.httpClient.executeOperation(operation, apiParams)
+
+        // Apply response transformation based on _output parameter
+        const transformConfig: Partial<TransformConfig> = {
+          mode: (_output as TransformConfig['mode']) || undefined,
+          fields: _fields as string[] | undefined,
+          operationType: ['get', 'head'].includes(operation.method?.toLowerCase() ?? '')
+            ? 'read'
+            : 'write',
+        }
+
+        const transformedData = this.transformer.transform(response.data, transformConfig)
 
         // Convert response to MCP format
         return {
           content: [
             {
               type: 'text', // currently this is the only type that seems to be used by mcp server
-              text: JSON.stringify(response.data), // TODO: pass through the http status code text?
+              text: JSON.stringify(transformedData),
             },
           ],
         }
