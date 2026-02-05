@@ -1247,6 +1247,37 @@
           "type"
         ]
       },
+      "embedBlockRequest": {
+        "type": "object",
+        "description": "Embed block for displaying external content from services like Figma, YouTube, Twitter, Google Maps, Miro, and more. The embed block displays a preview of the external website within the Notion UI.",
+        "properties": {
+          "embed": {
+            "type": "object",
+            "description": "Embed object containing the URL to the external content",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL of the website to embed. Supports services like Figma, YouTube, Twitter/X, Google Maps, Miro, PDF files, and other embeddable content."
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "const": "embed",
+            "type": "string",
+            "description": "Always equals 'embed' for embed blocks"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "embed"
+        ]
+      },
       "breadcrumbBlockRequest": {
         "type": "object",
         "description": "Breadcrumb navigation block showing page hierarchy path",
@@ -2746,6 +2777,9 @@
           },
           {
             "$ref": "#/components/schemas/dividerBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/embedBlockRequest"
           },
           {
             "$ref": "#/components/schemas/breadcrumbBlockRequest"
