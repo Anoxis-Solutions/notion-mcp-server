@@ -312,6 +312,292 @@
           }
         }
       },
+      "checkboxFilter": {
+        "type": "object",
+        "description": "Filter conditions for checkbox property type",
+        "properties": {
+          "equals": {
+            "type": "boolean",
+            "description": "Check if checkbox equals the specified value"
+          },
+          "does_not_equal": {
+            "type": "boolean",
+            "description": "Check if checkbox does not equal the specified value"
+          }
+        }
+      },
+      "dateFilter": {
+        "type": "object",
+        "description": "Filter conditions for date property type",
+        "properties": {
+          "equals": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Check if date equals the specified ISO 8601 date"
+          },
+          "before": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Check if date is before the specified ISO 8601 date"
+          },
+          "after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Check if date is after the specified ISO 8601 date"
+          },
+          "on_or_before": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Check if date is on or before the specified ISO 8601 date"
+          },
+          "on_or_after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Check if date is on or after the specified ISO 8601 date"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if date is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if date is not empty"
+          },
+          "past_week": {
+            "type": "object",
+            "description": "Check if date is within the past week",
+            "additionalProperties": false
+          },
+          "past_month": {
+            "type": "object",
+            "description": "Check if date is within the past month",
+            "additionalProperties": false
+          },
+          "past_year": {
+            "type": "object",
+            "description": "Check if date is within the past year",
+            "additionalProperties": false
+          },
+          "next_week": {
+            "type": "object",
+            "description": "Check if date is within the next week",
+            "additionalProperties": false
+          },
+          "next_month": {
+            "type": "object",
+            "description": "Check if date is within the next month",
+            "additionalProperties": false
+          },
+          "next_year": {
+            "type": "object",
+            "description": "Check if date is within the next year",
+            "additionalProperties": false
+          },
+          "this_week": {
+            "type": "object",
+            "description": "Check if date is within the current week",
+            "additionalProperties": false
+          }
+        }
+      },
+      "filesFilter": {
+        "type": "object",
+        "description": "Filter conditions for files property type",
+        "properties": {
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if files array is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if files array is not empty"
+          }
+        }
+      },
+      "multiSelectFilter": {
+        "type": "object",
+        "description": "Filter conditions for multi-select property type",
+        "properties": {
+          "contains": {
+            "type": "string",
+            "description": "Check if multi-select contains the specified option"
+          },
+          "does_not_contain": {
+            "type": "string",
+            "description": "Check if multi-select does not contain the specified option"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if multi-select is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if multi-select is not empty"
+          }
+        }
+      },
+      "numberFilter": {
+        "type": "object",
+        "description": "Filter conditions for number property type",
+        "properties": {
+          "equals": {
+            "type": "number",
+            "description": "Check if number equals the specified value"
+          },
+          "does_not_equal": {
+            "type": "number",
+            "description": "Check if number does not equal the specified value"
+          },
+          "greater_than": {
+            "type": "number",
+            "description": "Check if number is greater than the specified value"
+          },
+          "less_than": {
+            "type": "number",
+            "description": "Check if number is less than the specified value"
+          },
+          "greater_than_or_equal_to": {
+            "type": "number",
+            "description": "Check if number is greater than or equal to the specified value"
+          },
+          "less_than_or_equal_to": {
+            "type": "number",
+            "description": "Check if number is less than or equal to the specified value"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if number is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if number is not empty"
+          }
+        }
+      },
+      "peopleFilter": {
+        "type": "object",
+        "description": "Filter conditions for people property type",
+        "properties": {
+          "contains": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Check if people contains the specified user ID (UUIDv4)"
+          },
+          "does_not_contain": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Check if people does not contain the specified user ID (UUIDv4)"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if people array is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if people array is not empty"
+          }
+        }
+      },
+      "relationFilter": {
+        "type": "object",
+        "description": "Filter conditions for relation property type",
+        "properties": {
+          "contains": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Check if relation contains the specified page ID (UUIDv4)"
+          },
+          "does_not_contain": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Check if relation does not contain the specified page ID (UUIDv4)"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if relation is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if relation is not empty"
+          }
+        }
+      },
+      "richTextFilter": {
+        "type": "object",
+        "description": "Filter conditions for rich text property type",
+        "properties": {
+          "equals": {
+            "type": "string",
+            "description": "Check if text equals the specified value"
+          },
+          "does_not_equal": {
+            "type": "string",
+            "description": "Check if text does not equal the specified value"
+          },
+          "contains": {
+            "type": "string",
+            "description": "Check if text contains the specified value"
+          },
+          "does_not_contain": {
+            "type": "string",
+            "description": "Check if text does not contain the specified value"
+          },
+          "starts_with": {
+            "type": "string",
+            "description": "Check if text starts with the specified value"
+          },
+          "ends_with": {
+            "type": "string",
+            "description": "Check if text ends with the specified value"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if text is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if text is not empty"
+          }
+        }
+      },
+      "selectFilter": {
+        "type": "object",
+        "description": "Filter conditions for select property type",
+        "properties": {
+          "equals": {
+            "type": "string",
+            "description": "Check if select equals the specified option"
+          },
+          "does_not_equal": {
+            "type": "string",
+            "description": "Check if select does not equal the specified option"
+          },
+          "is_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if select is empty"
+          },
+          "is_not_empty": {
+            "type": "boolean",
+            "const": true,
+            "description": "Check if select is not empty"
+          }
+        }
+      },
       "paragraphBlockRequest": {
         "type": "object",
         "properties": {
@@ -1320,6 +1606,739 @@
           }
         },
         "additionalProperties": false
+      },
+      "partialUser": {
+        "type": "object",
+        "description": "A partial user object with minimal information, used in page objects for created_by and last_edited_by fields",
+        "properties": {
+          "object": {
+            "const": "user",
+            "description": "Always equals 'user' for user objects"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the user (UUIDv4)"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ]
+      },
+      "dataSourceProperty": {
+        "type": "object",
+        "description": "Schema definition for a single property in a data source",
+        "required": [
+          "id",
+          "name",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the property"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the property"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "title",
+              "rich_text",
+              "number",
+              "select",
+              "multi_select",
+              "date",
+              "people",
+              "files",
+              "checkbox",
+              "url",
+              "email",
+              "phone_number",
+              "formula",
+              "relation",
+              "rollup",
+              "created_time",
+              "created_by",
+              "last_edited_time",
+              "last_edited_by",
+              "status",
+              "place",
+              "unique_id"
+            ],
+            "description": "Type of the property"
+          },
+          "title": {
+            "type": "object",
+            "description": "Configuration for title type properties (empty object if present)"
+          },
+          "rich_text": {
+            "type": "object",
+            "description": "Configuration for rich text type properties (empty object if present)"
+          },
+          "number": {
+            "type": "object",
+            "description": "Configuration for number type properties",
+            "properties": {
+              "format": {
+                "type": "string",
+                "enum": [
+                  "number",
+                  "number_with_commas",
+                  "percent",
+                  "dollar",
+                  "euro",
+                  "pound",
+                  "yen",
+                  "ruble",
+                  "rupee",
+                  "won",
+                  "yuan",
+                  "hong_kong_dollar",
+                  "new_zealand_dollar",
+                  "krona",
+                  "franc",
+                  "dirham",
+                  "peso",
+                  "ringgit",
+                  "baht",
+                  "forint",
+                  "koruna",
+                  "shekel",
+                  "rand",
+                  "new_taiwan_dollar"
+                ]
+              }
+            }
+          },
+          "select": {
+            "type": "object",
+            "description": "Configuration for select type properties",
+            "properties": {
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "multi_select": {
+            "type": "object",
+            "description": "Configuration for multi-select type properties",
+            "properties": {
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "date": {
+            "type": "object",
+            "description": "Configuration for date type properties (empty object if present)"
+          },
+          "people": {
+            "type": "object",
+            "description": "Configuration for people type properties (empty object if present)"
+          },
+          "files": {
+            "type": "object",
+            "description": "Configuration for files type properties (empty object if present)"
+          },
+          "checkbox": {
+            "type": "object",
+            "description": "Configuration for checkbox type properties (empty object if present)"
+          },
+          "url": {
+            "type": "object",
+            "description": "Configuration for URL type properties (empty object if present)"
+          },
+          "email": {
+            "type": "object",
+            "description": "Configuration for email type properties (empty object if present)"
+          },
+          "formula": {
+            "type": "object",
+            "description": "Configuration for formula type properties",
+            "properties": {
+              "expression": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          },
+          "relation": {
+            "type": "object",
+            "description": "Configuration for relation type properties",
+            "properties": {
+              "database_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "dual_property",
+                  "single_property"
+                ]
+              }
+            }
+          },
+          "rollup": {
+            "type": "object",
+            "description": "Configuration for rollup type properties",
+            "properties": {
+              "relation_property_name": {
+                "type": "string"
+              },
+              "relation_property_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "rollup_property_name": {
+                "type": "string"
+              },
+              "rollup_property_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "function": {
+                "type": "string",
+                "enum": [
+                  "count",
+                  "count_per_group",
+                  "empty",
+                  "not_empty",
+                  "unique",
+                  "percent_empty",
+                  "percent_not_empty",
+                  "percent_unique",
+                  "average",
+                  "median",
+                  "min",
+                  "max",
+                  "range",
+                  "sum",
+                  "earliest_date",
+                  "latest_date",
+                  "date_range",
+                  "show_original_value"
+                ]
+              }
+            }
+          },
+          "created_time": {
+            "type": "object",
+            "description": "Configuration for created time type properties (empty object if present)"
+          },
+          "created_by": {
+            "type": "object",
+            "description": "Configuration for created by type properties (empty object if present)"
+          },
+          "last_edited_time": {
+            "type": "object",
+            "description": "Configuration for last edited time type properties (empty object if present)"
+          },
+          "last_edited_by": {
+            "type": "object",
+            "description": "Configuration for last edited by type properties (empty object if present)"
+          },
+          "status": {
+            "type": "object",
+            "description": "Configuration for status type properties",
+            "properties": {
+              "options": {
+                "type": "array",
+                "description": "Array of available status options for the property",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Identifier for the option"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the option"
+                    },
+                    "color": {
+                      "type": "string",
+                      "enum": [
+                        "blue",
+                        "brown",
+                        "default",
+                        "gray",
+                        "green",
+                        "orange",
+                        "pink",
+                        "purple",
+                        "red",
+                        "yellow"
+                      ],
+                      "description": "The color of the option"
+                    }
+                  }
+                }
+              },
+              "groups": {
+                "type": "array",
+                "description": "Array of option groups for the property",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Identifier for the group"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the group"
+                    },
+                    "color": {
+                      "type": "string",
+                      "enum": [
+                        "blue",
+                        "brown",
+                        "default",
+                        "gray",
+                        "green",
+                        "orange",
+                        "pink",
+                        "purple",
+                        "red",
+                        "yellow"
+                      ],
+                      "description": "The color of the group"
+                    },
+                    "option_ids": {
+                      "type": "array",
+                      "description": "A sorted list of ids of all options that belong to a group",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "place": {
+            "type": "object",
+            "description": "Configuration for place type properties (empty object if present)"
+          },
+          "unique_id": {
+            "type": "object",
+            "description": "Configuration for unique ID type properties",
+            "properties": {
+              "prefix": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "A common prefix assigned to pages in the data source"
+              }
+            }
+          },
+          "phone_number": {
+            "type": "object",
+            "description": "Configuration for phone number type properties (empty object if present)"
+          }
+        }
+      },
+      "dataSourceResponse": {
+        "type": "object",
+        "description": "Response schema for data source retrieve/create/update operations",
+        "required": [
+          "object",
+          "id",
+          "properties"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "data_source",
+            "description": "Always equals 'data_source'"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the data source"
+          },
+          "title": {
+            "type": "array",
+            "description": "Title of the data source",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "text"
+                },
+                "text": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string"
+                    },
+                    "link": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "bold": {
+                      "type": "boolean"
+                    },
+                    "italic": {
+                      "type": "boolean"
+                    },
+                    "strikethrough": {
+                      "type": "boolean"
+                    },
+                    "underline": {
+                      "type": "boolean"
+                    },
+                    "code": {
+                      "type": "boolean"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "plain_text": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "array",
+            "description": "Description of the data source",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "text"
+                },
+                "text": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string"
+                    },
+                    "link": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "bold": {
+                      "type": "boolean"
+                    },
+                    "italic": {
+                      "type": "boolean"
+                    },
+                    "strikethrough": {
+                      "type": "boolean"
+                    },
+                    "underline": {
+                      "type": "boolean"
+                    },
+                    "code": {
+                      "type": "boolean"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "plain_text": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "properties": {
+            "type": "object",
+            "description": "Schema definitions for all properties in this data source",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/dataSourceProperty"
+            }
+          }
+        }
+      },
+      "pageObject": {
+        "type": "object",
+        "description": "A page object representing a single page in a data source. Pages in data sources are data source rows.",
+        "required": [
+          "object",
+          "id",
+          "created_time",
+          "last_edited_time",
+          "archived",
+          "in_trash",
+          "parent",
+          "url"
+        ],
+        "properties": {
+          "object": {
+            "const": "page",
+            "description": "Always equals 'page' for page objects"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the page (UUIDv4)"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 date-time string when the page was created"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 date-time string when the page was last edited"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/partialUser",
+            "description": "User who created the page"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/partialUser",
+            "description": "User who last edited the page"
+          },
+          "cover": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "description": "File object for the cover image",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "external",
+                      "file"
+                    ]
+                  },
+                  "external": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "file": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "expiry_time": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "description": "Page cover image file object or null"
+          },
+          "icon": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "description": "Emoji object for the icon",
+                "properties": {
+                  "type": {
+                    "const": "emoji"
+                  },
+                  "emoji": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "description": "File object for the icon",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "external",
+                      "file"
+                    ]
+                  },
+                  "external": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "file": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "expiry_time": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "description": "Page icon (emoji or file object) or null"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/parentRequest",
+            "description": "Information about the page's parent"
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "The archived status of the page"
+          },
+          "in_trash": {
+            "type": "boolean",
+            "description": "Whether the page is in Trash"
+          },
+          "properties": {
+            "type": "object",
+            "description": "Property values of this page. Keys are property names and values are property value objects. If parent.type is 'database_id' or 'data_source_id', keys and values are determined by the properties of the data source. Otherwise, the only valid key is 'title'",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Identifier for the property value"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The type of the property value"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "url": {
+            "type": "string",
+            "description": "The URL of the Notion page"
+          },
+          "public_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The public page URL if the page has been published to the web, otherwise null"
+          }
+        }
+      },
+      "queryDataSourceResponse": {
+        "type": "object",
+        "description": "Response schema for data source query operations",
+        "required": [
+          "object",
+          "results",
+          "has_more"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list",
+            "description": "Always equals 'list'"
+          },
+          "results": {
+            "type": "array",
+            "description": "Array of page objects matching the query",
+            "items": {
+              "$ref": "#/components/schemas/pageObject"
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Cursor for the next page of results. Null if there are no more results."
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "Whether there are more results available"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "page",
+              "data_source"
+            ],
+            "description": "Type of the results (always 'page' for data source queries)"
+          }
+        }
       },
       "blockObjectRequest": {
         "anyOf": [
@@ -2806,8 +3825,205 @@
                 "type": "object",
                 "properties": {
                   "filter": {
-                    "type": "object",
-                    "description": "Filter conditions for querying the data source"
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "description": "Filter by checkbox property",
+                        "required": [
+                          "property",
+                          "checkbox"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the checkbox property to filter by"
+                          },
+                          "checkbox": {
+                            "$ref": "#/components/schemas/checkboxFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by date property",
+                        "required": [
+                          "property",
+                          "date"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the date property to filter by"
+                          },
+                          "date": {
+                            "$ref": "#/components/schemas/dateFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by files property",
+                        "required": [
+                          "property",
+                          "files"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the files property to filter by"
+                          },
+                          "files": {
+                            "$ref": "#/components/schemas/filesFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by multi-select property",
+                        "required": [
+                          "property",
+                          "multi_select"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the multi-select property to filter by"
+                          },
+                          "multi_select": {
+                            "$ref": "#/components/schemas/multiSelectFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by number property",
+                        "required": [
+                          "property",
+                          "number"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the number property to filter by"
+                          },
+                          "number": {
+                            "$ref": "#/components/schemas/numberFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by people property",
+                        "required": [
+                          "property",
+                          "people"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the people property to filter by"
+                          },
+                          "people": {
+                            "$ref": "#/components/schemas/peopleFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by relation property",
+                        "required": [
+                          "property",
+                          "relation"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the relation property to filter by"
+                          },
+                          "relation": {
+                            "$ref": "#/components/schemas/relationFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by rich text property",
+                        "required": [
+                          "property",
+                          "rich_text"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the rich text property to filter by"
+                          },
+                          "rich_text": {
+                            "$ref": "#/components/schemas/richTextFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Filter by select property",
+                        "required": [
+                          "property",
+                          "select"
+                        ],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "The name of the select property to filter by"
+                          },
+                          "select": {
+                            "$ref": "#/components/schemas/selectFilter"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Compound filter - all conditions must match (AND). Combines multiple filter conditions that must all be true. Each condition can be a single filter (checkbox, date, files, multi_select, number, people, relation, rich_text, select) or a nested compound filter (and/or). Supports nesting up to 2 levels deep.",
+                        "required": [
+                          "and"
+                        ],
+                        "properties": {
+                          "and": {
+                            "type": "array",
+                            "description": "Array of filter conditions. Each item must have either a 'property' field (for single filters) or an 'and'/'or' field (for nested compound filters).",
+                            "items": {
+                              "description": "A filter condition. Can be a single filter with 'property' and a filter type (checkbox, date, files, multi_select, number, people, relation, rich_text, select), or a compound filter with 'and' or 'or'."
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "description": "Compound filter - any condition can match (OR). Combines multiple filter conditions where at least one must be true. Each condition can be a single filter (checkbox, date, files, multi_select, number, people, relation, rich_text, select) or a nested compound filter (and/or). Supports nesting up to 2 levels deep.",
+                        "required": [
+                          "or"
+                        ],
+                        "properties": {
+                          "or": {
+                            "type": "array",
+                            "description": "Array of filter conditions. Each item must have either a 'property' field (for single filters) or an 'and'/'or' field (for nested compound filters).",
+                            "items": {
+                              "description": "A filter condition. Can be a single filter with 'property' and a filter type (checkbox, date, files, multi_select, number, people, relation, rich_text, select), or a compound filter with 'and' or 'or'."
+                            }
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "Filter conditions for querying the data source. Can be a single filter (specify property name and filter type: checkbox, date, files, multi_select, number, people, relation, rich_text, select) or a compound filter using 'and'/'or' to combine multiple conditions (supports nesting up to 2 levels deep)."
                   },
                   "sorts": {
                     "type": "array",
@@ -2839,7 +4055,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/queryDataSourceResponse"
                 }
               }
             }
@@ -2903,7 +4119,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/dataSourceResponse"
                 }
               }
             }
@@ -2993,7 +4209,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/dataSourceResponse"
                 }
               }
             }
@@ -3077,7 +4293,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/dataSourceResponse"
                 }
               }
             }
