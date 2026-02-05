@@ -534,8 +534,15 @@ When creating content in Notion pages, use these tools and patterns:
 - \`table_of_contents\` - Auto-generated TOC
 
 ## Request Format
-Pass blocks as JSON string in \`children\` parameter:
-\`children=[{"object":"block","type":"paragraph","paragraph":{"text":[{"content":"Hello"}]}}]\`
+Pass blocks as an array of block objects. The server automatically handles both formats:
+
+**Option 1 (recommended)**: Pass as native objects
+\`children=[{"type":"paragraph","paragraph":{"text":[{"content":"Hello"}]}}]\`
+
+**Option 2**: Pass as JSON string (auto-handled for clients that double-serialize)
+\`children="[{\"type\":\"paragraph\",\"paragraph\":{\"text\":[{\"content\":\"Hello\"}]}}]"\`
+
+Note: The server automatically detects and deserializes JSON strings to objects.
 
 ## Example: Create a Simple Page
 1. Call \`create-a-page\` with title
@@ -559,7 +566,7 @@ Pass blocks as JSON string in \`children\` parameter:
 ## Common Mistakes to Avoid
 1. Always use full block structure with \`object: "block"\`
 2. Text content goes in \`text[]\` array with \`content\` field
-3. For \`append-block-children\`, children is a JSON string array
+3. The \`children\` parameter accepts both native objects and JSON strings (auto-detected)
 4. Block types use underscores (e.g., \`heading_1\`, not \`heading1\`)
 
 Available block types: ${blockTypesList || 'heading_1, heading_2, heading_3, paragraph, code, quote, callout, bulleted_list_item, numbered_list_item, to_do, toggle, divider, image, video...'}
