@@ -45,7 +45,7 @@ export class ResponseTransformer {
     }
 
     if (mode === 'reduced') {
-      return this.transformReduced(data, config.fields)
+      return this.transformReduced(data, config.fields, operationType)
     }
 
     return data
@@ -127,13 +127,13 @@ export class ResponseTransformer {
    * Transform to reduced format
    * Extracts values from nested structures while keeping useful metadata
    */
-  private transformReduced(data: unknown, fields?: string[]): unknown {
+  private transformReduced(data: unknown, fields?: string[], operationType: 'read' | 'write' = 'read'): unknown {
     if (data === null || data === undefined) {
       return data
     }
 
     if (Array.isArray(data)) {
-      return data.map(item => this.transformReduced(item, fields))
+      return data.map(item => this.transformReduced(item, fields, operationType))
     }
 
     if (typeof data !== 'object') {
@@ -141,6 +141,11 @@ export class ResponseTransformer {
     }
 
     const obj = data as Record<string, unknown>
+
+    // For write operations, return simplified confirmation
+    if (operationType === 'write' && 'id' in obj) {
+      return this.transformWriteResult(obj, fields)
+    }
 
     // Handle paginated responses with results array
     if ('results' in obj && Array.isArray(obj.results)) {
@@ -152,6 +157,83 @@ export class ResponseTransformer {
 
     // Handle single object responses
     return this.transformObject(obj, fields)
+  }
+
+  /**
+   * Transform write operation result to simplified format
+   * Returns confirmation with what was changed
+   */
+  private transformWriteResult(obj: Record<string, unknown>, fields?: string[]): Record<string, unknown> {
+    const result: Record<string, unknown> = {
+      success: true,
+      id: obj.id,
+    }
+
+    // Add timestamp
+    if ('last_edited_time' in obj) {
+      result.last_edited_time = obj.last_edited_time
+    }
+
+    // Extract title/name
+    const title = this.extractTitle(obj)
+    if (title) {
+      result.title = title
+    }
+
+    // Extract properties that were updated
+    if ('properties' in obj && typeof obj.properties === 'object' && obj.properties !== null) {
+      if (fields && fields.length > 0) {
+        // Only include requested fields
+        result.updated_properties = {}
+        const props = obj.properties as Record<string, unknown>
+        for (const field of fields) {
+          if (field in props) {
+            const extracted = this.extractNotionValue(props[field] as Record<string, unknown>)
+            if (extracted !== null && extracted !== undefined && extracted !== '') {
+              (result.updated_properties as Record<string, unknown>)[field] = extracted
+            }
+          }
+        }
+      } else {
+        // Include all non-empty properties
+        result.updated_properties = this.transformProperties(obj.properties as Record<string, unknown>)
+      }
+    }
+
+    // Add URL if available
+    if ('url' in obj) {
+      result.url = obj.url
+    }
+
+    return result
+  }
+
+  /**
+   * Extract title/name from an object
+   */
+  private extractTitle(obj: Record<string, unknown>): string | null {
+    // Try common title fields
+    if ('title' in obj && typeof obj.title === 'string') {
+      return obj.title as string
+    }
+
+    // Try extracting from Notion title property
+    if ('properties' in obj && typeof obj.properties === 'object' && obj.properties !== null) {
+      const props = obj.properties as Record<string, unknown>
+      for (const [key, value] of Object.entries(props)) {
+        if (value && typeof value === 'object') {
+          const prop = value as Record<string, unknown>
+          if (prop.type === 'title' || prop.type === 'name') {
+            const extracted = this.extractNotionValue(prop)
+            if (extracted && typeof extracted === 'string') {
+              return extracted
+            }
+          }
+        }
+      }
+    }
+
+    return null
   }
 
   /**
