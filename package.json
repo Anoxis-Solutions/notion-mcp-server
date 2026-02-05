@@ -1,5 +1,5 @@
 {
-  "name": "@notionhq/notion-mcp-server",
+  "name": "@anoxis/notion-mcp-server",
   "keywords": [
     "notion",
     "api",
@@ -49,15 +49,15 @@
     "typescript": "^5.8.2",
     "vitest": "^3.1.1"
   },
-  "description": "Official MCP server for Notion API",
+  "description": "Unofficial MCP server for Notion API (Anoxis fork)",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/makenotion/notion-mcp-server.git"
+    "url": "git+ssh://git@github.com/Anoxis-Solutions/notion-mcp-server.git"
   },
-  "author": "@notionhq",
+  "author": "Anoxis Solutions",
   "bugs": {
-    "url": "https://github.com/makenotion/notion-mcp-server/issues"
+    "url": "https://github.com/Anoxis-Solutions/notion-mcp-server/issues"
   },
-  "homepage": "https://github.com/makenotion/notion-mcp-server#readme"
+  "homepage": "https://github.com/Anoxis-Solutions/notion-mcp-server#readme"
 }
