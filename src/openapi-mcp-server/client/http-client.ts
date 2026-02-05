@@ -49,11 +49,17 @@ export class HttpClient {
     this.api = this.client.init()
   }
 
-  private async prepareFileUpload(operation: OpenAPIV3.OperationObject, params: Record<string, any>): Promise<FormData | null> {
+  private async prepareFileUpload(
+    operation: OpenAPIV3.OperationObject,
+    params: Record<string, any>
+  ): Promise<{ formData: FormData | null; cleanup: () => void }> {
     const fileParams = isFileUploadParameter(operation)
-    if (fileParams.length === 0) return null
+    if (fileParams.length === 0) {
+      return { formData: null, cleanup: () => {} }
+    }
 
     const formData = new FormData()
+    const streams: fs.ReadStream[] = []
 
     // Handle file uploads
     for (const param of fileParams) {
@@ -66,22 +72,32 @@ export class HttpClient {
           addFile(param, filePath)
           break
         case 'object':
-          if(Array.isArray(filePath)) {
+          if (Array.isArray(filePath)) {
             let fileCount = 0
-            for(const file of filePath) {
+            for (const file of filePath) {
               addFile(param, file)
               fileCount++
             }
             break
           }
-          //deliberate fallthrough
+          // deliberate fallthrough
         default:
           throw new Error(`Unsupported file type: ${typeof filePath}`)
       }
+
       function addFile(name: string, filePath: string) {
-          try {
-            const fileStream = fs.createReadStream(filePath)
-            formData.append(name, fileStream)
+        try {
+          const fileStream = fs.createReadStream(filePath)
+          streams.push(fileStream)
+          formData.append(name, fileStream)
+
+          // Remove from tracking when stream ends naturally
+          fileStream.on('end', () => {
+            const idx = streams.indexOf(fileStream)
+            if (idx !== -1) {
+              streams.splice(idx, 1)
+            }
+          })
         } catch (error) {
           throw new Error(`Failed to read file at ${filePath}: ${error}`)
         }
@@ -95,7 +111,17 @@ export class HttpClient {
       }
     }
 
-    return formData
+    // Cleanup function to close all remaining streams
+    const cleanup = () => {
+      for (const stream of streams) {
+        if (!stream.destroyed) {
+          stream.destroy()
+        }
+      }
+      streams.length = 0
+    }
+
+    return { formData, cleanup }
   }
 
   /**
@@ -112,7 +138,7 @@ export class HttpClient {
     }
 
     // Handle file uploads if present
-    const formData = await this.prepareFileUpload(operation, params)
+    const { formData, cleanup } = await this.prepareFileUpload(operation, params)
 
     // Separate parameters based on their location
     const urlParameters: Record<string, any> = {}
@@ -193,6 +219,8 @@ export class HttpClient {
         throw new HttpClientError(error.response.statusText || 'Request failed', error.response.status, error.response.data, headers)
       }
       throw error
+    } finally {
+      cleanup()
     }
   }
 }

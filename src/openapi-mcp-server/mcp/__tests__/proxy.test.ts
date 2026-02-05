@@ -220,6 +220,7 @@ describe('MCPProxy', () => {
 
     it('should return empty object when env var is not set', () => {
       delete process.env.OPENAPI_MCP_HEADERS
+      delete process.env.NOTION_TOKEN
 
       const proxy = new MCPProxy('test-proxy', mockOpenApiSpec)
       expect(HttpClient).toHaveBeenCalledWith(
@@ -233,6 +234,7 @@ describe('MCPProxy', () => {
     it('should return empty object and warn on invalid JSON', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       process.env.OPENAPI_MCP_HEADERS = 'invalid json'
+      delete process.env.NOTION_TOKEN
 
       const proxy = new MCPProxy('test-proxy', mockOpenApiSpec)
       expect(HttpClient).toHaveBeenCalledWith(
@@ -248,6 +250,7 @@ describe('MCPProxy', () => {
     it('should return empty object and warn on non-object JSON', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       process.env.OPENAPI_MCP_HEADERS = '"string"'
+      delete process.env.NOTION_TOKEN
 
       const proxy = new MCPProxy('test-proxy', mockOpenApiSpec)
       expect(HttpClient).toHaveBeenCalledWith(

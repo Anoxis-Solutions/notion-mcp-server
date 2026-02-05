@@ -77,7 +77,7 @@ describe('HttpClient File Upload', () => {
 
   it('should handle file uploads with FormData', async () => {
     const mockFormData = new FormData()
-    const mockFileStream = { pipe: vi.fn() }
+    const mockFileStream = { pipe: vi.fn(), on: vi.fn(), destroyed: false, destroy: vi.fn() }
     const mockFormDataHeaders = { 'content-type': 'multipart/form-data; boundary=---123' }
 
     vi.mocked(fs.createReadStream).mockReturnValue(mockFileStream as any)
@@ -128,8 +128,8 @@ describe('HttpClient File Upload', () => {
 
   it('should handle multiple file uploads', async () => {
     const mockFormData = new FormData()
-    const mockFileStream1 = { pipe: vi.fn() }
-    const mockFileStream2 = { pipe: vi.fn() }
+    const mockFileStream1 = { pipe: vi.fn(), on: vi.fn(), destroyed: false, destroy: vi.fn() }
+    const mockFileStream2 = { pipe: vi.fn(), on: vi.fn(), destroyed: false, destroy: vi.fn() }
     const mockFormDataHeaders = { 'content-type': 'multipart/form-data; boundary=---123' }
 
     vi.mocked(fs.createReadStream)
