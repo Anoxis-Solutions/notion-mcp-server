@@ -1829,6 +1829,33 @@
         },
         "additionalProperties": false
       },
+      "childPageBlockRequest": {
+        "type": "object",
+        "description": "A child_page block represents a page within a page. This allows creating a nested page structure.",
+        "properties": {
+          "child_page": {
+            "type": "object",
+            "description": "Child page object containing the page title",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The plain text title of the page"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "enum": [
+              "child_page"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "columnListBlockRequest": {
         "type": "object",
         "description": "Container for multi-column layout, requires 2+ column children",
@@ -2761,6 +2788,9 @@
           },
           {
             "$ref": "#/components/schemas/childDatabaseBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/childPageBlockRequest"
           },
           {
             "$ref": "#/components/schemas/columnListBlockRequest"
