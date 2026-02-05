@@ -263,6 +263,84 @@ export class OpenAPIToMCPConverter {
     }
     return schema
   }
+
+  /**
+   * Collect all $ref names referenced in a JSON Schema
+   * This finds which schemas are actually used, not just included in $defs
+   */
+  private collectReferencedSchemaNames(schema: IJsonSchema, refs = new Set<string>()): Set<string> {
+    if (!schema || typeof schema !== 'object') return refs
+
+    // Collect $ref pointing to $defs
+    if (schema.$ref && typeof schema.$ref === 'string') {
+      const match = schema.$ref.match(/#\/\$defs\/(.+)$/)
+      if (match) {
+        refs.add(match[1])
+      }
+    }
+
+    // Recursively check all properties except $defs itself
+    for (const [key, value] of Object.entries(schema)) {
+      if (key === '$defs') continue
+      if (Array.isArray(value)) {
+        value.forEach(item => this.collectReferencedSchemaNames(item, refs))
+      } else if (typeof value === 'object' && value !== null) {
+        this.collectReferencedSchemaNames(value, refs)
+      }
+    }
+
+    return refs
+  }
+
+  /**
+   * Recursively collect all transitive dependencies of the given schema names
+   * If schema A references schema B, and schema B references schema C,
+   * we need to include all three in $defs
+   */
+  private collectTransitiveDependencies(schemaNames: Set<string>, collected = new Set<string>()): Set<string> {
+    for (const name of schemaNames) {
+      if (collected.has(name)) continue
+
+      collected.add(name)
+
+      // Get the schema for this name
+      const components = this.openApiSpec.components?.schemas
+      if (!components || !components[name]) continue
+
+      // Convert it to find what it references
+      const converted = this.convertOpenApiSchemaToJsonSchema(components[name] as any, new Set(), false)
+
+      // Find what this schema references
+      const refs = this.collectReferencedSchemaNames(converted)
+      this.collectTransitiveDependencies(refs, collected)
+    }
+
+    return collected
+  }
+
+  /**
+   * Convert only the schemas that are actually referenced in the given schema
+   * This dramatically reduces $defs size by only including what's used
+   */
+  private convertOnlyReferencedSchemas(schema: IJsonSchema): Record<string, IJsonSchema> {
+    // Find all direct references
+    const referencedNames = this.collectReferencedSchemaNames(schema)
+
+    // Find transitive dependencies (schemas referenced by referenced schemas)
+    const allNeededNames = this.collectTransitiveDependencies(referencedNames)
+
+    // Convert only the schemas we need
+    const components = this.openApiSpec.components?.schemas || {}
+    const result: Record<string, IJsonSchema> = {}
+
+    for (const name of allNeededNames) {
+      if (components[name]) {
+        result[name] = this.convertOpenApiSchemaToJsonSchema(components[name] as any, new Set())
+      }
+    }
+
+    return result
+  }
   /**
    * Helper method to convert an operation to a JSON Schema for parameters
    */
@@ -275,7 +353,6 @@ export class OpenAPIToMCPConverter {
       type: 'object',
       properties: {},
       required: [],
-      $defs: this.convertComponentsToJsonSchema(),
     }
 
     // Handle parameters (path, query, header, cookie)
@@ -313,6 +390,9 @@ export class OpenAPIToMCPConverter {
         }
       }
     }
+
+    // Only include $defs that are actually referenced
+    schema.$defs = this.convertOnlyReferencedSchemas(schema)
 
     return schema
   }
@@ -374,7 +454,6 @@ export class OpenAPIToMCPConverter {
     const methodName = operation.operationId
 
     const inputSchema: IJsonSchema & { type: 'object' } = {
-      $defs: this.convertComponentsToJsonSchema(),
       type: 'object',
       properties: {},
       required: [],
@@ -468,6 +547,9 @@ export class OpenAPIToMCPConverter {
       description: 'Optional list of fields to include when using _output=reduced. If not specified, all fields are included.',
     }
 
+    // Only include $defs that are actually referenced in input schema
+    inputSchema.$defs = this.convertOnlyReferencedSchemas(inputSchema)
+
     // Generate Zod schema from input schema
     try {
       // const zodSchemaStr = jsonSchemaToZod(inputSchema, { module: "cjs" })
@@ -503,7 +585,9 @@ export class OpenAPIToMCPConverter {
 
     if (responseObj.content['application/json']?.schema) {
       const returnSchema = this.convertOpenApiSchemaToJsonSchema(responseObj.content['application/json'].schema, new Set(), false)
-      returnSchema['$defs'] = this.convertComponentsToJsonSchema()
+
+      // Only include $defs that are actually referenced in return schema
+      returnSchema['$defs'] = this.convertOnlyReferencedSchemas(returnSchema)
 
       // Preserve the response description if available and not already set
       if (responseObj.description && !returnSchema.description) {
