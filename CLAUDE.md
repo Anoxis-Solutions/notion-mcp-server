@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the Notion MCP Server - an [MCP (Model Context Protocol)](https://spec.modelcontextprotocol.io/) server that exposes the [Notion API](https://developers.notion.com/reference/intro) as MCP tools. It auto-generates tools from an OpenAPI specification.
+**This is an UNOFFICIAL Notion MCP Server.** It is not affiliated with or endorsed by Notion.
+
+This is an [MCP (Model Context Protocol)](https://spec.modelcontextprotocol.io/) server that exposes the [Notion API](https://developers.notion.com/reference/intro) as MCP tools. It auto-generates tools from an OpenAPI specification.
 
 ## Architecture
 
@@ -116,8 +118,18 @@ Two environment variable options:
 
 ## Known Limitations
 
-See `TO_FIX.md` for comprehensive list of identified issues:
-- Block types extremely limited (2/31 types in spec)
-- Filter schema undefined for data source queries
-- No batch operations
-- Empty response schemas prevent AI from interpreting results
+The server has been significantly improved but still has some limitations. See `TO_FIX.md` for comprehensive list of identified issues:
+
+### Recently Addressed (as of 2025-02)
+- ✅ Block types expanded from 2 to 19+ types (headings, code, quote, callout, image, video, etc.)
+- ✅ Filter schemas added for 9 property types (checkbox, date, files, multiSelect, number, people, relation, richText, select)
+- ✅ Timestamp sorting support added to sortObject
+- ✅ Templates list response schema added
+- ✅ post-page.children items schema fixed
+
+### Remaining Limitations
+- Compound filters (AND/OR nesting) not fully defined
+- Response schemas for some data source endpoints still empty
+- Property type schemas incomplete (only dataSourceProperty defined)
+- No batch operations (API limitation)
+- Manual pagination required for large result sets
