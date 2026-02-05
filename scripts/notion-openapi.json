@@ -3544,6 +3544,10 @@
                     "type": "boolean",
                     "description": "Set to true to archive (delete) a block. Set to false to un-archive (restore) a block.",
                     "default": true
+                  },
+                  "in_trash": {
+                    "type": "boolean",
+                    "description": "Set to true to move the block to trash. Set to false to remove from trash."
                   }
                 }
               }
@@ -3888,6 +3892,44 @@
                     "type": "string",
                     "description": "The cover image of the new page, represented as a [file object](https://developers.notion.com/reference/file-object).",
                     "format": "json"
+                  },
+                  "template": {
+                    "type": "object",
+                    "description": "Template to apply to the new page. When applying a template, the children parameter is not allowed.",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["none", "default", "template_id"],
+                        "description": "Type of template to apply."
+                      },
+                      "template_id": {
+                        "type": "string",
+                        "description": "ID of the template to apply when type is 'template_id'."
+                      }
+                    },
+                    "required": ["type"]
+                  },
+                  "position": {
+                    "type": "object",
+                    "description": "Controls where the new page appears in the parent's children list.",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["after_block", "page_start", "page_end"],
+                        "description": "The type of positioning."
+                      },
+                      "after_block": {
+                        "type": "object",
+                        "description": "Used when type is 'after_block'.",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["id"]
+                      }
+                    },
+                    "required": ["type"]
                   }
                 }
               }
@@ -4683,9 +4725,25 @@
                     },
                     "maxItems": 100
                   },
+                  "icon": {
+                    "type": "string",
+                    "description": "Page icon with types including file_upload, emoji, external, or custom_emoji.",
+                    "format": "json"
+                  },
                   "properties": {
                     "type": "object",
                     "description": "Property schema updates"
+                  },
+                  "in_trash": {
+                    "type": "boolean",
+                    "description": "Whether the data source is in the trash."
+                  },
+                  "archived": {
+                    "type": "boolean",
+                    "description": "Set to true to archive the data source. Set to false to unarchive."
+                  },
+                  "parent": {
+                    "$ref": "#/components/schemas/dataSourceIdParentRequest"
                   }
                 }
               }
@@ -4770,6 +4828,11 @@
                       "$ref": "#/components/schemas/richTextRequest"
                     },
                     "maxItems": 100
+                  },
+                  "icon": {
+                    "type": "string",
+                    "description": "The icon for the data source",
+                    "format": "json"
                   }
                 }
               }
