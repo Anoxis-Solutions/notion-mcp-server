@@ -44,6 +44,12 @@
           "text"
         ],
         "properties": {
+          "type": {
+            "enum": [
+              "text"
+            ],
+            "type": "string"
+          },
           "text": {
             "type": "object",
             "required": [
@@ -70,10 +76,122 @@
             },
             "additionalProperties": false
           },
+          "annotations": {
+            "type": "object",
+            "properties": {
+              "bold": {
+                "type": "boolean",
+                "default": false
+              },
+              "italic": {
+                "type": "boolean",
+                "default": false
+              },
+              "strikethrough": {
+                "type": "boolean",
+                "default": false
+              },
+              "underline": {
+                "type": "boolean",
+                "default": false
+              },
+              "code": {
+                "type": "boolean",
+                "default": false
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ],
+                "default": "default"
+              }
+            }
+          },
+          "plain_text": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "mentionRequest": {
+        "type": "object",
+        "properties": {
           "type": {
             "enum": [
-              "text"
+              "mention"
             ],
+            "type": "string"
+          },
+          "mention": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "user",
+                  "page",
+                  "database",
+                  "date",
+                  "now"
+                ]
+              },
+              "user": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "page": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "database": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "date": {
+                "type": "string"
+              }
+            }
+          },
+          "plain_text": {
+            "type": "string"
+          },
+          "href": {
             "type": "string"
           }
         },
@@ -206,6 +324,30 @@
                   "$ref": "#/components/schemas/richTextRequest"
                 },
                 "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
               }
             },
             "additionalProperties": false,
@@ -234,6 +376,30 @@
                   "$ref": "#/components/schemas/richTextRequest"
                 },
                 "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
               }
             },
             "additionalProperties": false,
@@ -250,6 +416,911 @@
         },
         "additionalProperties": false
       },
+      "heading1BlockRequest": {
+        "type": "object",
+        "properties": {
+          "heading_1": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              },
+              "is_toggleable": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "heading_1"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "heading2BlockRequest": {
+        "type": "object",
+        "properties": {
+          "heading_2": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              },
+              "is_toggleable": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "heading_2"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "heading3BlockRequest": {
+        "type": "object",
+        "properties": {
+          "heading_3": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              },
+              "is_toggleable": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "heading_3"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "numberedListItemBlockRequest": {
+        "type": "object",
+        "properties": {
+          "numbered_list_item": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "numbered_list_item"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "toDoBlockRequest": {
+        "type": "object",
+        "properties": {
+          "to_do": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "checked": {
+                "type": "boolean"
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "to_do"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "codeBlockRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "language": {
+                "type": "string",
+                "enum": [
+                  "abap",
+                  "arduino",
+                  "bash",
+                  "basic",
+                  "c",
+                  "clojure",
+                  "coffeescript",
+                  "c++",
+                  "c#",
+                  "css",
+                  "dart",
+                  "diff",
+                  "docker",
+                  "elixir",
+                  "elm",
+                  "erlang",
+                  "flow",
+                  "fortran",
+                  "f#",
+                  "gherkin",
+                  "glsl",
+                  "go",
+                  "graphql",
+                  "groovy",
+                  "haskell",
+                  "html",
+                  "java",
+                  "javascript",
+                  "json",
+                  "julia",
+                  "kotlin",
+                  "latex",
+                  "less",
+                  "lisp",
+                  "livescript",
+                  "lua",
+                  "makefile",
+                  "markdown",
+                  "markup",
+                  "matlab",
+                  "mermaid",
+                  "nix",
+                  "objective-c",
+                  "ocaml",
+                  "pascal",
+                  "perl",
+                  "php",
+                  "plain text",
+                  "powershell",
+                  "prolog",
+                  "protobuf",
+                  "python",
+                  "r",
+                  "reason",
+                  "ruby",
+                  "rust",
+                  "sass",
+                  "scala",
+                  "scheme",
+                  "scss",
+                  "shell",
+                  "sql",
+                  "swift",
+                  "typescript",
+                  "vb.net",
+                  "verilog",
+                  "vhdl",
+                  "visual basic",
+                  "webassembly",
+                  "xml",
+                  "yaml",
+                  "java/c/c++/c#"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text",
+              "language"
+            ]
+          },
+          "type": {
+            "enum": [
+              "code"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "quoteBlockRequest": {
+        "type": "object",
+        "properties": {
+          "quote": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "quote"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "dividerBlockRequest": {
+        "type": "object",
+        "properties": {
+          "divider": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          "type": {
+            "enum": [
+              "divider"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type"
+        ]
+      },
+      "calloutBlockRequest": {
+        "type": "object",
+        "properties": {
+          "callout": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "icon": {
+                "type": "object",
+                "properties": {
+                  "emoji": {
+                    "type": "string"
+                  }
+                }
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "type": {
+            "enum": [
+              "callout"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "toggleBlockRequest": {
+        "type": "object",
+        "properties": {
+          "toggle": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                },
+                "maxItems": 100
+              },
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "rich_text"
+            ]
+          },
+          "children": {
+            "type": "array",
+            "description": "Optional children inside the toggle (any block types)",
+            "items": {
+              "$ref": "#/components/schemas/blockObjectRequest"
+            }
+          },
+          "type": {
+            "enum": [
+              "toggle"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "tableBlockRequest": {
+        "type": "object",
+        "properties": {
+          "table": {
+            "type": "object",
+            "properties": {
+              "table_width": {
+                "type": "integer"
+              },
+              "has_column_header": {
+                "type": "boolean"
+              },
+              "has_row_header": {
+                "type": "boolean"
+              }
+            }
+          },
+          "children": {
+            "type": "array",
+            "description": "Table rows as children",
+            "items": {
+              "$ref": "#/components/schemas/tableRowBlockRequest"
+            }
+          },
+          "type": {
+            "enum": [
+              "table"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "tableRowBlockRequest": {
+        "type": "object",
+        "properties": {
+          "table_row": {
+            "type": "object",
+            "properties": {
+              "cells": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/richTextRequest"
+                  }
+                }
+              }
+            },
+            "required": [
+              "cells"
+            ]
+          },
+          "type": {
+            "enum": [
+              "table_row"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "tableOfContentsBlockRequest": {
+        "type": "object",
+        "properties": {
+          "table_of_contents": {
+            "type": "object",
+            "properties": {
+              "color": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "gray",
+                  "brown",
+                  "orange",
+                  "yellow",
+                  "green",
+                  "blue",
+                  "purple",
+                  "pink",
+                  "red",
+                  "gray_background",
+                  "brown_background",
+                  "orange_background",
+                  "yellow_background",
+                  "green_background",
+                  "blue_background",
+                  "purple_background",
+                  "pink_background",
+                  "red_background"
+                ]
+              }
+            }
+          },
+          "type": {
+            "enum": [
+              "table_of_contents"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "imageBlockRequest": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "external",
+                  "file"
+                ]
+              },
+              "external": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              },
+              "file": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "expiry_time": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caption": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            }
+          },
+          "type": {
+            "enum": [
+              "image"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "videoBlockRequest": {
+        "type": "object",
+        "properties": {
+          "video": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "external",
+                  "file"
+                ]
+              },
+              "external": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              },
+              "file": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "expiry_time": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caption": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            }
+          },
+          "type": {
+            "enum": [
+              "video"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "fileBlockRequest": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "external",
+                  "file"
+                ]
+              },
+              "external": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              },
+              "file": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "expiry_time": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caption": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            }
+          },
+          "type": {
+            "enum": [
+              "file"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "pdfBlockRequest": {
+        "type": "object",
+        "properties": {
+          "pdf": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "external",
+                  "file"
+                ]
+              },
+              "external": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              },
+              "file": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "expiry_time": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caption": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            }
+          },
+          "type": {
+            "enum": [
+              "pdf"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "bookmarkBlockRequest": {
+        "type": "object",
+        "properties": {
+          "bookmark": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            },
+            "required": [
+              "url"
+            ]
+          },
+          "type": {
+            "enum": [
+              "bookmark"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "blockObjectRequest": {
         "anyOf": [
           {
@@ -257,6 +1328,60 @@
           },
           {
             "$ref": "#/components/schemas/bulletedListItemBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/heading1BlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/heading2BlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/heading3BlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/numberedListItemBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/toDoBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/codeBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/quoteBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/dividerBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/calloutBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/toggleBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/tableBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/tableRowBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/tableOfContentsBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/imageBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/videoBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/fileBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/pdfBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/bookmarkBlockRequest"
           }
         ]
       }
