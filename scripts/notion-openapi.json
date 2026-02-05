@@ -2743,6 +2743,59 @@
           }
         }
       },
+      "templateObject": {
+        "type": "object",
+        "description": "A page template object representing a template in a data source",
+        "required": [
+          "id",
+          "name",
+          "is_default"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the template (UUIDv4 format)"
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the template"
+          },
+          "is_default": {
+            "type": "boolean",
+            "description": "Whether this is the data source's default template"
+          }
+        }
+      },
+      "templatesListResponse": {
+        "type": "object",
+        "description": "Response schema for listing templates in a data source",
+        "required": [
+          "templates",
+          "has_more"
+        ],
+        "properties": {
+          "templates": {
+            "type": "array",
+            "description": "Array of template objects available in the data source (max 100)",
+            "items": {
+              "$ref": "#/components/schemas/templateObject"
+            }
+          },
+          "has_more": {
+            "type": "boolean",
+            "description": "Whether there are more templates available"
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Cursor for the next page of templates. Only present when has_more is true."
+          }
+        }
+      },
       "blockObjectRequest": {
         "anyOf": [
           {
@@ -4808,7 +4861,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/templatesListResponse"
                 }
               }
             }
