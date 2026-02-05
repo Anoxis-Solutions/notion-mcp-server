@@ -1163,6 +1163,70 @@
         },
         "additionalProperties": false
       },
+      "syncedBlockRequest": {
+        "type": "object",
+        "description": "Reusable block that syncs content across all instances. Can be original (synced_from: null) with children, or duplicate (synced_from: {block_id}) without children.",
+        "properties": {
+          "synced_block": {
+            "type": "object",
+            "description": "Synced block configuration",
+            "properties": {
+              "synced_from": {
+                "oneOf": [
+                  {
+                    "type": "null",
+                    "description": "Original synced block that contains the source content"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Duplicate synced block that references the original",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "block_id"
+                        ]
+                      },
+                      "block_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "The ID of the original synced block"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "block_id"
+                    ]
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "synced_from"
+            ]
+          },
+          "children": {
+            "type": "array",
+            "description": "Child blocks (only for original synced blocks where synced_from is null)",
+            "items": {
+              "$ref": "#/components/schemas/blockObjectRequest"
+            }
+          },
+          "type": {
+            "enum": [
+              "synced_block"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "synced_block"
+        ]
+      },
       "dividerBlockRequest": {
         "type": "object",
         "properties": {
@@ -1181,6 +1245,55 @@
         "additionalProperties": false,
         "required": [
           "type"
+        ]
+      },
+      "breadcrumbBlockRequest": {
+        "type": "object",
+        "description": "Breadcrumb navigation block showing page hierarchy path",
+        "properties": {
+          "breadcrumb": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          "type": {
+            "const": "breadcrumb",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type"
+        ]
+      },
+      "equationBlockRequest": {
+        "type": "object",
+        "description": "Mathematical formula block using KaTeX syntax. Example expressions: 'E = mc^2', '\\frac{a}{b}', 'x^2 + y^2 = z^2', '\\sum_{i=0}^{n} i^2'",
+        "properties": {
+          "equation": {
+            "type": "object",
+            "properties": {
+              "expression": {
+                "type": "string",
+                "description": "KaTeX-compatible mathematical expression. Examples: simple formulas like 'E = mc^2', complex notation like '\\frac{a}{b}' or '\\int_{0}^{\\infty} x^{-1} dx'"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "expression"
+            ]
+          },
+          "type": {
+            "enum": [
+              "equation"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "equation"
         ]
       },
       "calloutBlockRequest": {
@@ -1558,6 +1671,57 @@
         },
         "additionalProperties": false
       },
+      "audioBlockRequest": {
+        "type": "object",
+        "properties": {
+          "audio": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "enum": [
+                  "external",
+                  "file"
+                ]
+              },
+              "external": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              },
+              "file": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "expiry_time": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caption": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            }
+          },
+          "type": {
+            "enum": [
+              "audio"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "pdfBlockRequest": {
         "type": "object",
         "properties": {
@@ -1637,6 +1801,156 @@
           }
         },
         "additionalProperties": false
+      },
+      "childDatabaseBlockRequest": {
+        "type": "object",
+        "description": "A child_database block represents an inline database within a page. This allows creating a database as a child of a page.",
+        "properties": {
+          "child_database": {
+            "type": "object",
+            "description": "Child database object containing the database title",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "The plain text title of the database"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "enum": [
+              "child_database"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "columnListBlockRequest": {
+        "type": "object",
+        "description": "Container for multi-column layout, requires 2+ column children",
+        "properties": {
+          "column_list": {
+            "type": "object",
+            "description": "Column list object (empty property)",
+            "additionalProperties": false
+          },
+          "children": {
+            "type": "array",
+            "description": "Column blocks (must have at least 2)",
+            "items": {
+              "$ref": "#/components/schemas/columnBlockRequest"
+            },
+            "minItems": 2
+          },
+          "type": {
+            "enum": [
+              "column_list"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "columnBlockRequest": {
+        "type": "object",
+        "description": "Individual column in a multi-column layout",
+        "properties": {
+          "column": {
+            "type": "object",
+            "description": "Column object with optional width ratio",
+            "properties": {
+              "width_ratio": {
+                "type": "number",
+                "description": "Width ratio between 0 and 1. Should sum to 1 across sibling columns. Defaults to equal widths when omitted.",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "children": {
+            "type": "array",
+            "description": "Child content inside the column (any block types except column)",
+            "items": {
+              "$ref": "#/components/schemas/blockObjectRequest"
+            }
+          },
+          "type": {
+            "enum": [
+              "column"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "linkPreviewBlockRequest": {
+        "type": "object",
+        "description": "Rich link preview card showing title, description, and image from URL",
+        "properties": {
+          "link_preview": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL to generate a link preview for"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "const": "link_preview",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "link_preview"
+        ]
+      },
+      "templateBlockRequest": {
+        "type": "object",
+        "description": "Template button that duplicates its children when clicked",
+        "properties": {
+          "template": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "description": "Optional rich text array for the template button label",
+                "items": {
+                  "$ref": "#/components/schemas/richTextRequest"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "children": {
+            "type": "array",
+            "description": "Template content to duplicate when the button is clicked",
+            "items": {
+              "$ref": "#/components/schemas/blockObjectRequest"
+            }
+          },
+          "type": {
+            "const": "template",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "children"
+        ]
       },
       "partialUser": {
         "type": "object",
@@ -2401,7 +2715,16 @@
             "$ref": "#/components/schemas/quoteBlockRequest"
           },
           {
+            "$ref": "#/components/schemas/syncedBlockRequest"
+          },
+          {
             "$ref": "#/components/schemas/dividerBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/breadcrumbBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/equationBlockRequest"
           },
           {
             "$ref": "#/components/schemas/calloutBlockRequest"
@@ -2428,10 +2751,28 @@
             "$ref": "#/components/schemas/fileBlockRequest"
           },
           {
+            "$ref": "#/components/schemas/audioBlockRequest"
+          },
+          {
             "$ref": "#/components/schemas/pdfBlockRequest"
           },
           {
             "$ref": "#/components/schemas/bookmarkBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/childDatabaseBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/columnListBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/columnBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/linkPreviewBlockRequest"
+          },
+          {
+            "$ref": "#/components/schemas/templateBlockRequest"
           }
         ]
       }
