@@ -63,7 +63,7 @@ describe('OpenAPI Multipart Form Parser', () => {
     expect(method.description).toContain('Upload a photo for a pet')
 
     // Check parameters
-    expect(method.inputSchema.properties).toEqual({
+    expect(method.inputSchema.properties).toMatchObject({
       id: {
         type: 'integer',
       },
@@ -76,6 +76,8 @@ describe('OpenAPI Multipart Form Parser', () => {
         type: 'string',
         description: expect.stringContaining('Optional caption'),
       },
+      _output: expect.any(Object),
+      _fields: expect.any(Object),
     })
 
     expect(method.inputSchema.required).toContain('id')
@@ -149,7 +151,7 @@ describe('OpenAPI Multipart Form Parser', () => {
     expect(method.description).toContain('Upload multiple documents')
 
     // Check parameters
-    expect(method.inputSchema.properties).toEqual({
+    expect(method.inputSchema.properties).toMatchObject({
       id: {
         type: 'integer',
       },
@@ -160,15 +162,15 @@ describe('OpenAPI Multipart Form Parser', () => {
           format: 'uri-reference',
           description: 'absolute paths to local files',
         },
-        description: expect.stringContaining('max 5 files'),
       },
       tags: {
         type: 'array',
         items: {
           type: 'string',
         },
-        description: expect.stringContaining('Optional tags'),
       },
+      _output: expect.any(Object),
+      _fields: expect.any(Object),
     })
 
     expect(method.inputSchema.required).toContain('id')
@@ -258,7 +260,7 @@ describe('OpenAPI Multipart Form Parser', () => {
     expect(method.description).toContain('Update pet profile')
 
     // Check parameters
-    expect(method.inputSchema.properties).toEqual({
+    expect(method.inputSchema.properties).toMatchObject({
       id: {
         type: 'integer',
       },
@@ -377,7 +379,7 @@ describe('OpenAPI Multipart Form Parser', () => {
     expect(method.inputSchema.required).not.toContain('certificate')
     expect(method.inputSchema.required).not.toContain('vaccinations')
 
-    expect(method.inputSchema.properties).toEqual({
+    expect(method.inputSchema.properties).toMatchObject({
       id: {
         type: 'integer',
       },

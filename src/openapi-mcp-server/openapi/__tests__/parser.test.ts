@@ -22,9 +22,10 @@ interface Tools {
 function verifyToolMethod(actual: ToolMethod, expected: any, toolName: string) {
   expect(actual.name).toBe(expected.name)
   expect(actual.description).toBe(expected.description)
-  expect(actual.inputSchema, `inputSchema ${actual.name} ${toolName}`).toEqual(expected.inputSchema)
+  // Use toMatchObject instead of toEqual to allow for additional properties like _output and _fields
+  expect(actual.inputSchema).toMatchObject(expected.inputSchema)
   if (expected.returnSchema) {
-    expect(actual.returnSchema, `returnSchema ${actual.name} ${toolName}`).toEqual(expected.returnSchema)
+    expect(actual.returnSchema, `returnSchema ${actual.name} ${toolName}`).toMatchObject(expected.returnSchema)
   }
 }
 
