@@ -409,256 +409,435 @@ export class MCPProxy {
 
   private initializePrompts(): Record<string, PromptDefinition> {
     return {
-      'create-meeting-notes': {
-        name: 'create-meeting-notes',
-        description: 'Create a structured meeting notes page in Notion with sections for attendees, agenda, discussion points, and action items',
-        arguments: [
-          {
-            name: 'meeting_title',
-            description: 'The title of the meeting',
-            required: true
-          },
-          {
-            name: 'attendees',
-            description: 'List of meeting attendees (optional)',
-            required: false
-          },
-          {
-            name: 'date',
-            description: 'Meeting date (optional, defaults to today)',
-            required: false
-          }
-        ],
-        getMessages: (args: Record<string, string>) => {
-          const { meeting_title, attendees, date } = args
-          const today = new Date().toISOString().split('T')[0]
-          const meetingDate = date || today
+      'query-guide': {
+        name: 'query-guide',
+        description: 'Guide for querying Notion databases with filters, sorting, and compound conditions. Read this before querying data sources.',
+        arguments: [],
+        getMessages: () => {
+          // Get filter schemas from resource for dynamic content
+          const filterResource = this.resources['notion://filter-schemas']
+          const filterContent = filterResource ? JSON.parse(filterResource.getContent()) : { filterSchemas: {} }
+
+          const examples = Object.entries(filterContent.filterSchemas || {}).slice(0, 3).map(([type, ops]) => {
+            const opsList = Array.isArray(ops) ? (ops as string[]).slice(0, 3).join(', ') : ''
+            return `      - ${type}: ${opsList}...`
+          }).join('\n')
 
           return [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Create a meeting notes page in Notion with the following details:
+                text: `# Notion Database Query Guide
 
-Title: ${meeting_title}
-Date: ${meetingDate}
-${attendees ? `Attendees: ${attendees}` : ''}
+When querying Notion databases with \`query-data-source\`, use these patterns:
 
-The page should include:
-1. A heading for the meeting title
-2. Meeting date and attendees (if provided)
-3. An "Agenda" section with bullet points for topics to discuss
-4. A "Discussion Points" section for notes during the meeting
-5. An "Action Items" section with checkboxes for tasks, including:
-   - Task description
-   - Assigned to (person)
-   - Due date
-   - Status checkbox
+## Tool to Use
+- \`query-data-source\` - Query a database/data source with filters and sorting
 
-Use appropriate Notion block types like headings, bulleted lists, and to-do lists to make the page well-structured and easy to use during and after the meeting.`
+## Filter Structure
+Pass filter as JSON string in the \`filter\` parameter:
+
+### Simple Filter (single condition)
+\`filter={"property":"Status","select":{"equals":"Done"}}\`
+
+### Date Filter Examples
+\`filter={"property":"Due Date","date":{"on_or_after":"2025-01-01"}}\`
+\`filter={"property":"Created","date":{"past_week":{}}}\`
+
+### Compound Filter (AND/OR)
+\`filter={"and":[
+  {"property":"Status","select":{"equals":"In Progress"}},
+  {"property":"Priority","select":{"equals":"High"}}
+]}\`
+
+## Available Filter Operators by Property Type
+${examples || `      - date: equals, before, after, on_or_after, past_week, past_month...
+      - select: equals, does_not_equal, is_empty, is_not_empty...
+      - number: equals, does_not_equal, greater_than, less_than...`}
+
+For complete operator reference, read the \`notion://filter-schemas\` resource.
+
+## Sorting
+\`sorts=[{"property":"Last Edited","direction":"descending"}]\`
+
+## Pagination
+Notion uses cursor-based pagination:
+- First call: no cursor needed
+- Next calls: pass \`start_cursor\` from previous response
+- Check \`has_more\` to know if more results exist
+
+## Common Mistakes to Avoid
+1. Property names are case-sensitive - match exact database schema
+2. Date values must be ISO format: YYYY-MM-DD
+3. Compound filters require "and" or "or" as root key
+4. Filter parameter is a JSON string, not a direct object
+
+Need more details? Consult the MCP resources:
+- \`notion://filter-schemas\` - All operators by property type
+- \`notion://property-types\` - Property type configurations
+- \`notion://openapi-spec\` - Full API specification`
               }
             }
           ]
         }
       },
 
-      'create-task-page': {
-        name: 'create-task-page',
-        description: 'Create a task tracking page in Notion with a table or board view for managing tasks, priorities, and statuses',
-        arguments: [
-          {
-            name: 'project_name',
-            description: 'Name of the project or task list',
-            required: true
-          },
-          {
-            name: 'task_description',
-            description: 'Brief description of what these tasks are for',
-            required: false
+      'block-creation-guide': {
+        name: 'block-creation-guide',
+        description: 'Guide for creating content in Notion pages using different block types. Read this before creating or appending blocks.',
+        arguments: [],
+        getMessages: () => {
+          // Get block types from resource for dynamic content
+          const blockResource = this.resources['notion://block-types']
+          let blockTypesList = ''
+          if (blockResource) {
+            const blockContent = JSON.parse(blockResource.getContent())
+            blockTypesList = (blockContent.blockTypes || []).slice(0, 15).join(', ')
           }
-        ],
-        getMessages: (args: Record<string, string>) => {
-          const { project_name, task_description } = args
 
           return [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Create a task tracking page in Notion for: ${project_name}
-${task_description ? `\nDescription: ${task_description}` : ''}
+                text: `# Notion Block Creation Guide
 
-The page should include:
-1. A clear heading with the project name
-2. A table view with the following columns:
-   - Task Name (title column)
-   - Status (select: Not Started, In Progress, Done, Blocked)
-   - Priority (select: Low, Medium, High, Urgent)
-   - Assignee (person property)
-   - Due Date (date property)
-   - Tags (multi-select for categorization)
-3. Sample tasks to demonstrate the structure
-4. Consider adding a board view grouped by Status for easy visual tracking
+When creating content in Notion pages, use these tools and patterns:
 
-Make the page clean, organized, and ready for immediate use in task management.`
+## Tools for Block Creation
+- \`append-block-children\` - Add blocks to an existing page
+- \`create-a-page\` - Create a new page (returns page ID for appending blocks)
+
+## Common Block Types
+
+### Text Blocks
+- \`paragraph\` - Regular text (default)
+- \`heading_1\`, \`heading_2\`, \`heading_3\` - Headings
+- \`code\` - Code blocks with language
+- \`callout\` - Highlighted callout boxes
+- \`quote\` - Quote blocks
+
+### List Blocks
+- \`bulleted_list_item\` - Bullet points
+- \`numbered_list_item\` - Numbered lists
+- \`to_do\` - Task items with checkbox
+
+### Media Blocks
+- \`image\` - Images (external URL)
+- \`video\` - Videos (external URL)
+- \`file\` - File attachments
+
+### Structure Blocks
+- \`divider\` - Horizontal line
+- \`toggle\` - Collapsible content
+- \`table_of_contents\` - Auto-generated TOC
+
+## Request Format
+Pass blocks as JSON string in \`children\` parameter:
+\`children=[{"object":"block","type":"paragraph","paragraph":{"text":[{"content":"Hello"}]}}]\`
+
+## Example: Create a Simple Page
+1. Call \`create-a-page\` with title
+2. Take returned \`id\`
+3. Call \`append-block-children\` with that \`id\` and block content
+
+## Example Block Structures
+
+### Paragraph with text
+\`{"type":"paragraph","paragraph":{"text":[{"content":"Hello world"}]}}\`
+
+### Heading
+\`{"type":"heading_1","heading_1":{"text":[{"content":"Title"}]}}\`
+
+### To-do item
+\`{"type":"to_do","to_do":{"text":[{"content":"Task"}],"checked":false}}\`
+
+### Code block
+\`{"type":"code","code":{"text":["console.log('hello')"],"language":"javascript"}}\`
+
+## Common Mistakes to Avoid
+1. Always use full block structure with \`object: "block"\`
+2. Text content goes in \`text[]\` array with \`content\` field
+3. For \`append-block-children\`, children is a JSON string array
+4. Block types use underscores (e.g., \`heading_1\`, not \`heading1\`)
+
+Available block types: ${blockTypesList || 'heading_1, heading_2, heading_3, paragraph, code, quote, callout, bulleted_list_item, numbered_list_item, to_do, toggle, divider, image, video...'}
+
+For complete block type reference, read the \`notion://block-types\` resource.`
               }
             }
           ]
         }
       },
 
-      'weekly-report': {
-        name: 'weekly-report',
-        description: 'Create a weekly report template in Notion for tracking accomplishments, plans, and blockers',
-        arguments: [
-          {
-            name: 'week_start',
-            description: 'Start date of the week (e.g., 2024-01-15)',
-            required: true
-          },
-          {
-            name: 'team_name',
-            description: 'Name of the team or individual (optional)',
-            required: false
-          }
-        ],
-        getMessages: (args: Record<string, string>) => {
-          const { week_start, team_name } = args
-
+      'error-handling-guide': {
+        name: 'error-handling-guide',
+        description: 'Guide for understanding and handling Notion API errors. Read this when you encounter errors.',
+        arguments: [],
+        getMessages: () => {
           return [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Create a weekly report page in Notion for the week starting: ${week_start}
-${team_name ? `Team: ${team_name}` : ''}
+                text: `# Notion Error Handling Guide
 
-The page should include:
-1. Heading with "Weekly Report - Week of [date]"
-2. Section: "Key Accomplishments This Week"
-   - Bullet points for completed tasks/milestones
-3. Section: "Work in Progress"
-   - Bullet points for ongoing work with status
-4. Section: "Plans for Next Week"
-   - Bullet points for upcoming priorities
-5. Section: "Blockers & Challenges"
-   - List any issues preventing progress
-   - Note what help is needed
-6. Section: "Metrics & Highlights"
-   - Key numbers or achievements worth highlighting
-7. Optional: A simple table or checklist format for tracking specific items
+When working with the Notion API, you may encounter errors. Here's how to handle them:
 
-Use headings, dividers, and appropriate spacing to make the report easy to read and update weekly.`
+## Error Response Format
+All errors return a structured response:
+\`{"message":"User-friendly description","error":{"code":"error_code","httpStatus":404,...}}\`
+
+## Common Error Categories
+
+### 401 Unauthorized
+- **Code**: \`unauthorized\`
+- **Cause**: Invalid or missing bearer token
+- **Solution**: Check NOTION_TOKEN starts with "ntn_" and is valid
+
+### 403 Forbidden
+- **Code**: \`forbidden\` or \`permission_required\`
+- **Cause**: Integration doesn't have access to the resource
+- **Solution**: Share the specific page/database with your integration in Notion
+
+### 404 Not Found
+- **Code**: \`object_not_found\`
+- **Cause**: Resource ID doesn't exist or isn't shared
+- **Solution**: Verify the ID and that it's shared with your integration
+- **Tip**: The error message indicates the resource type (page, block, database, user)
+
+### 400 Validation Error
+- **Code**: \`validation_error\`
+- **Cause**: Invalid request body or parameters
+- **Solution**: Check parameter names, types, and required fields
+
+### 409 Conflict
+- **Code**: \`conflict\`
+- **Cause**: Simultaneous modifications
+- **Solution**: Retry the request after a short delay
+
+### 429 Rate Limited
+- **Code**: \`rate_limited\`
+- **Cause**: Too many requests
+- **Solution**: Implement exponential backoff, slow down request rate
+- **Note**: Check for \`retry_after\` field for wait duration
+
+### 500+ Server Errors
+- **Codes**: \`internal_server_error\`, \`bad_gateway\`, etc.
+- **Cause**: Notion server issues
+- **Solution**: Retry after a short delay
+
+## Error Messages from This MCP Server
+The server provides user-friendly error messages:
+- Describes what went wrong
+- Suggests how to fix it
+- Includes the original error code for reference
+
+## Debugging Tips
+1. Check the \`message\` field first for user-friendly explanation
+2. Look at \`error.code\` for the Notion API error code
+3. For 404 errors, verify resource type (page vs database vs block)
+4. For 403 errors, ensure sharing in Notion UI
+5. For 400 errors, validate parameter names match schema
+
+For complete error code reference, read the \`notion://error-codes\` resource.`
               }
             }
           ]
         }
       },
 
-      'project-roadmap': {
-        name: 'project-roadmap',
-        description: 'Create a project roadmap page in Notion with timeline view, milestones, and deliverables',
-        arguments: [
-          {
-            name: 'project_name',
-            description: 'Name of the project',
-            required: true
-          },
-          {
-            name: 'timeline',
-            description: 'Project timeline description (e.g., "Q1 2024" or "6 months")',
-            required: false
-          },
-          {
-            name: 'objective',
-            description: 'Main project objective or goal (optional)',
-            required: false
+      'property-types-guide': {
+        name: 'property-types-guide',
+        description: 'Guide for understanding Notion database property types and their configuration. Read this before creating or querying databases.',
+        arguments: [],
+        getMessages: () => {
+          // Get property types from resource for dynamic content
+          const propResource = this.resources['notion://property-types']
+          let propTypesList: string[] = []
+          if (propResource) {
+            const propContent = JSON.parse(propResource.getContent())
+            propTypesList = propContent.propertyTypes || []
           }
-        ],
-        getMessages: (args: Record<string, string>) => {
-          const { project_name, timeline, objective } = args
 
           return [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Create a project roadmap page in Notion for: ${project_name}
-${timeline ? `\nTimeline: ${timeline}` : ''}
-${objective ? `\nObjective: ${objective}` : ''}
+                text: `# Notion Property Types Guide
 
-The page should include:
-1. Project title and brief description
-2. Section: "Project Overview"
-   - Goal/Objective
-   - Timeline
-   - Key stakeholders
-3. Section: "Phases & Milestones"
-   - Timeline view or table showing:
-     - Phase name
-     - Start/End dates
-     - Key deliverables
-     - Status (Not Started, In Progress, Complete)
-     - Dependencies
-4. Section: "Upcoming Deliverables"
-   - List of immediate next items
-5. Section: "Risks & Issues"
-   - Track potential risks and mitigation plans
-6. Optional: A visual timeline using dates and status properties
+Understanding property types is essential for creating databases and filtering queries.
 
-Use database views (timeline, table, board) to make the roadmap interactive and easy to update.`
+## Tools for Property Configuration
+- \`create-a-data-source\` - Create a new database with property schema
+- \`update-a-data-source\` - Modify existing database properties
+- \`query-data-source\` - Filter by property values
+
+## Common Property Types
+
+### Basic Types
+- \`title\` - Required title property (every database has one)
+- \`text\` / \`rich_text\` - Multi-line text content
+- \`number\` - Numeric values with optional formatting
+- \`checkbox\` - Boolean true/false
+- \`date\` - Date with optional time
+
+### Selection Types
+- \`select\` - Single choice from predefined options
+- \`multi_select\` - Multiple choices from predefined options
+
+### Relationship Types
+- \`people\` - Reference to Notion users
+- \`relation\` - Reference to another database
+
+### Content Types
+- \`files\` - File attachments
+- \`url\` - Link to external resource
+- \`email\` - Email address
+- \`phone\` - Phone number
+
+### Advanced Types
+- \`formula\` - Computed expression
+- \`rollup\` - Aggregation from relation
+- \`created_time\` - Auto-generated timestamp
+- \`created_by\` - Auto-generated user reference
+- \`last_edited_time\` - Auto-modified timestamp
+- \`last_edited_by\` - Auto-modified user reference
+
+## Property Configuration in Create/Update
+
+When creating a database, properties are defined in the schema:
+\`properties:{"Status":{"select":{"options":[{"name":"Done","color":"green"}]}}}\`
+
+## Filtering by Property Type
+
+Different property types use different filter operators:
+- **select**: \`equals\`, \`does_not_equal\`, \`is_empty\`
+- **date**: \`equals\`, \`before\`, \`after\`, \`on_or_after\`, \`past_week\`
+- **number**: \`equals\`, \`greater_than\`, \`less_than\`
+- **checkbox**: \`equals\` (true/false)
+- **people**: \`contains\`, \`does_not_contain\`
+
+Available property types in this API: ${(propTypesList || ['title', 'text', 'number', 'select', 'multi_select', 'date', 'people', 'checkbox', 'files', 'url', 'email', 'phone', 'formula', 'relation', 'rollup']).slice(0, 15).join(', ')}
+
+## Common Mistakes
+1. Title property is mandatory in every database
+2. Select options require both \`name\` and \`color\`
+3. Filter operators are type-specific (check filter-schemas)
+4. Property names are case-sensitive in queries
+5. Formula/rollup values are read-only (cannot set in create/update)
+
+For complete property type reference, read the \`notion://property-types\` resource.`
               }
             }
           ]
         }
       },
 
-      'knowledge-base-entry': {
-        name: 'knowledge-base-entry',
-        description: 'Create a knowledge base article page in Notion with proper structure for documentation',
-        arguments: [
-          {
-            name: 'topic',
-            description: 'The main topic or title of the knowledge base entry',
-            required: true
-          },
-          {
-            name: 'category',
-            description: 'Category or tag for the entry (e.g., "Technical", "Process", "Onboarding")',
-            required: false
-          }
-        ],
-        getMessages: (args: Record<string, string>) => {
-          const { topic, category } = args
-
+      'pagination-guide': {
+        name: 'pagination-guide',
+        description: 'Guide for handling paginated responses from Notion API. Read this when querying large datasets.',
+        arguments: [],
+        getMessages: () => {
           return [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: `Create a knowledge base article page in Notion for the topic: ${topic}
-${category ? `\nCategory: ${category}` : ''}
+                text: `# Notion Pagination Guide
 
-The page should include:
-1. Clear heading with the topic title
-2. Section: "Overview"
-   - Brief summary of what this entry covers
-   - Who this information is for
-3. Section: "Key Information"
-   - Main content with appropriate subheadings
-   - Use bullet points, numbered lists, and code blocks where applicable
-4. Section: "Resources & Links"
-   - Related internal links
-   - External references
-   - Helpful files or attachments
-5. Section: "FAQ"
-   - Common questions and quick answers
-6. Section: "Last Updated"
-   - Date stamp and author
-7. Optional: Tags property for easy categorization and search
+Notion uses cursor-based pagination for large result sets. This guide explains how to handle it.
 
-Make the page scannable with clear headings, use toggle blocks for detailed content that might clutter the main view, and include proper formatting for readability.`
+## Which Tools Return Paginated Results
+- \`query-data-source\` - Database queries
+- \`search\` - Search across workspace
+- \`list-block-children\` - List blocks in a page
+- \`retrieve-a-page\` - With children populated
+
+## Pagination Response Structure
+Every paginated response includes:
+\`{
+  "results": [...],
+  "next_cursor": "eyJmaWxkZXIiOnsiY...",
+  "has_more": true
+}\`
+
+## Pagination Flow
+
+### First Request
+Call the tool without \`start_cursor\`:
+\`query-data-source?data_source_id=xxx\`
+
+### Check for More Results
+If \`has_more: true\`, there are more results
+
+### Get Next Page
+Pass \`next_cursor\` as \`start_cursor\`:
+\`query-data-source?data_source_id=xxx&start_cursor=eyJmaWxkZXIiOnsiY...\`\`
+
+### Stop When
+\`has_more: false\` or \`next_cursor\` is null
+
+## Complete Example Pattern
+\`\`\`javascript
+// First call
+response1 = await query-data-source(data_source_id)
+all_results = response1.results
+
+// Loop while more results exist
+while (response1.has_more) {
+  next_response = await query-data-source(
+    data_source_id,
+    start_cursor=response1.next_cursor
+  )
+  all_results.push(...next_response.results)
+  response1 = next_response
+}
+\`\`\`
+
+## Important Notes
+
+### Page Size
+- Default page size varies by endpoint
+- Use page_size parameter to control (max usually 100)
+- Larger page sizes = fewer API calls, but more per-request latency
+
+### Cursor Validity
+- Cursors expire after some time (minutes)
+- Don't store cursors for later use
+- Always start fresh for new queries
+
+### Result Ordering
+- Results maintain order across pages
+- Sorting affects entire result set, not just current page
+- Use \`sorts\` parameter for consistent ordering
+
+### Performance
+- Prefer filtering to reduce result set size
+- Only fetch needed properties with \`_fields\` parameter
+- Consider if you really need ALL results
+
+## Common Mistakes
+1. Forgetting to check \`has_more\` before looping
+2. Using expired cursors from previous sessions
+3. Assuming fixed page size across endpoints
+4. Not handling empty result sets (has_more=false, results=[])
+5. Infinite loops when cursor logic is wrong
+
+## Parameters That Help
+- \`page_size\` - Control results per page (1-100 typically)
+- \`start_cursor\` - Cursor for next page
+- \`_fields\` - Filter response properties (Notion MCP extension)
+- \`filter\` - Reduce result set before pagination
+
+## Tools That Don't Paginate
+- \`retrieve-a-block\` - Single block
+- \`retrieve-a-page\` (without children) - Single page metadata
+- \`create-a-page\`, \`update-a-page\` - Single object operations
+
+For complete API details, read the \`notion://openapi-spec\` resource.`
               }
             }
           ]
