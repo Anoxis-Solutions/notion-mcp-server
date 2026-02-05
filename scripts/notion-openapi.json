@@ -294,23 +294,54 @@
         ]
       },
       "sortObject": {
-        "type": "object",
-        "required": [
-          "property",
-          "direction"
-        ],
-        "properties": {
-          "property": {
-            "type": "string"
-          },
-          "direction": {
-            "enum": [
-              "ascending",
-              "descending"
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Sort by a property",
+            "required": [
+              "property",
+              "direction"
             ],
-            "type": "string"
+            "properties": {
+              "property": {
+                "type": "string",
+                "description": "The name of the property to sort by"
+              },
+              "direction": {
+                "enum": [
+                  "ascending",
+                  "descending"
+                ],
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "Sort by page timestamp",
+            "required": [
+              "timestamp",
+              "direction"
+            ],
+            "properties": {
+              "timestamp": {
+                "enum": [
+                  "created_time",
+                  "last_edited_time"
+                ],
+                "type": "string",
+                "description": "Use this instead of 'property' to sort by timestamp"
+              },
+              "direction": {
+                "enum": [
+                  "ascending",
+                  "descending"
+                ],
+                "type": "string"
+              }
+            }
           }
-        }
+        ]
       },
       "checkboxFilter": {
         "type": "object",
